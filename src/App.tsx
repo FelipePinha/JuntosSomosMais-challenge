@@ -1,3 +1,15 @@
-export function App() {
-    return <h1>Hellor World</h1>;
-}
+import { Header } from './components/Header';
+import { Breadcrumb } from './components/ui/breadcrumb';
+
+export const App = () => {
+    return (
+        <>
+            <Header />
+            <main className="mt-6 max-w-6xl mx-auto">
+                <nav>
+                    <Breadcrumb />
+                </nav>
+            </main>
+        </>
+    );
+};
