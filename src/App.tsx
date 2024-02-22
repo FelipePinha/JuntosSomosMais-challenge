@@ -1,9 +1,14 @@
+import { useState } from 'react';
+
+import Members from '../members.json';
+
 import { Header } from './components/header';
 import { Breadcrumb } from './components/ui/breadcrumb';
 import { MembersHeader } from './components/members-header';
-import Members from '../members.json';
 import { MemberCard } from './components/member-card';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { FilterBox } from './components/filter-box';
+import { Pagination } from './components/pagination';
+
 import LogoWhite from './assets/logo-white.png';
 import Facebook from './assets/Facebook.png';
 import Whatsapp from './assets/Whatsapp.png';
@@ -11,6 +16,14 @@ import LinkedIn from './assets/LinkedIn.png';
 
 export const App = () => {
     const members = Members.results;
+
+    const [currPage, setCurrPage] = useState(1);
+    const membersPerPage = 30;
+
+    // get current members
+    const indexOfLastMember = currPage * membersPerPage;
+    const indexOfFirstMember = indexOfLastMember - membersPerPage;
+    const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
 
     return (
         <div className="space-y-6">
@@ -22,37 +35,22 @@ export const App = () => {
                 <div className="space-y-6">
                     <h1 className="text-3xl font-bold">Lista de membros</h1>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-                        <section className="">
-                            <h2>Checkbox filter</h2>
-                        </section>
+                        <FilterBox />
 
                         <section className="md:col-span-3 space-y-6">
                             <MembersHeader />
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 auto-row-[250px]">
-                                {members.slice(0, 27).map((member, id) => (
+                                {currentMembers.slice(0, 27).map((member, id) => (
                                     <MemberCard key={id} member={member} />
                                 ))}
                             </div>
 
-                            <div className="flex gap-4 items-center justify-center">
-                                <button className="bg-slate-400 rounded-full text-slate-300 p-2">
-                                    <ChevronLeft />
-                                </button>
-
-                                <button className="text-slate-400 font-bold border-b-2 border-slate-400 text-lg">
-                                    1
-                                </button>
-                                <button className="text-slate-400 font-bold border-b-2 border-slate-400 text-lg">
-                                    2
-                                </button>
-                                <button className="text-slate-400 font-bold border-b-2 border-slate-400 text-lg">
-                                    3
-                                </button>
-
-                                <button className="bg-slate-900 rounded-full text-slate-300 p-2">
-                                    <ChevronRight />
-                                </button>
-                            </div>
+                            <Pagination
+                                membersPerPage={membersPerPage}
+                                totalMembers={members.length}
+                                setCurrPage={setCurrPage}
+                                currPage={currPage}
+                            />
                         </section>
                     </div>
                 </div>
