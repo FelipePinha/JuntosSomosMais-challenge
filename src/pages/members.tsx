@@ -6,16 +6,20 @@ import { Header } from '../components/header';
 import { Breadcrumb } from '../components/ui/breadcrumb';
 import { MembersHeader } from '../components/members-header';
 import { MemberCard } from '../components/member-card';
-import { FilterBox } from '../components/filter-box';
+import { FilterBox } from '../components/state-filter';
 import { Pagination } from '../components/pagination';
 
 import LogoWhite from '../assets/logo-white.png';
 import Facebook from '../assets/Facebook.png';
 import Whatsapp from '../assets/Whatsapp.png';
 import LinkedIn from '../assets/LinkedIn.png';
+import { useSearchParams } from 'react-router-dom';
 
 export const Members = () => {
     const members = MembersList.results;
+
+    const [searchParams] = useSearchParams({ name: '' });
+    const name = searchParams.get('name');
 
     const [currPage, setCurrPage] = useState(1);
     const membersPerPage = 30;
@@ -24,6 +28,15 @@ export const Members = () => {
     const indexOfLastMember = currPage * membersPerPage;
     const indexOfFirstMember = indexOfLastMember - membersPerPage;
     const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
+
+    // filter current members
+    const searchResults = currentMembers.filter(member => {
+        const firstName = member.name.first + member.name.first.slice(1);
+        const lastName = member.name.last + member.name.last.slice(1);
+        const fullName = firstName.concat(' ' + lastName);
+
+        return fullName.includes(name!.toLowerCase());
+    });
 
     return (
         <div className="space-y-6">
@@ -40,7 +53,7 @@ export const Members = () => {
                         <section className="md:col-span-3 space-y-6">
                             <MembersHeader />
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 auto-row-[250px]">
-                                {currentMembers.slice(0, 27).map((member, id) => (
+                                {searchResults.slice(0, 27).map((member, id) => (
                                     <MemberCard key={id} member={member} />
                                 ))}
                             </div>
