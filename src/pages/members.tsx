@@ -1,21 +1,21 @@
 import { useState } from 'react';
 
-import Members from '../members.json';
+import MembersList from '../../members.json';
 
-import { Header } from './components/header';
-import { Breadcrumb } from './components/ui/breadcrumb';
-import { MembersHeader } from './components/members-header';
-import { MemberCard } from './components/member-card';
-import { FilterBox } from './components/filter-box';
-import { Pagination } from './components/pagination';
+import { Header } from '../components/header';
+import { Breadcrumb } from '../components/ui/breadcrumb';
+import { MembersHeader } from '../components/members-header';
+import { MemberCard } from '../components/member-card';
+import { FilterBox } from '../components/filter-box';
+import { Pagination } from '../components/pagination';
 
-import LogoWhite from './assets/logo-white.png';
-import Facebook from './assets/Facebook.png';
-import Whatsapp from './assets/Whatsapp.png';
-import LinkedIn from './assets/LinkedIn.png';
+import LogoWhite from '../assets/logo-white.png';
+import Facebook from '../assets/Facebook.png';
+import Whatsapp from '../assets/Whatsapp.png';
+import LinkedIn from '../assets/LinkedIn.png';
 
-export const App = () => {
-    const members = Members.results;
+export const Members = () => {
+    const members = MembersList.results;
 
     const [currPage, setCurrPage] = useState(1);
     const membersPerPage = 30;
