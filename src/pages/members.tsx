@@ -14,21 +14,23 @@ import Facebook from '../assets/Facebook.png';
 import Whatsapp from '../assets/Whatsapp.png';
 import LinkedIn from '../assets/LinkedIn.png';
 import { useSearchParams } from 'react-router-dom';
+import { MemberTypes } from '../types/membersTypes';
 
 export const Members = () => {
     const members = MembersList.results;
 
+    const [stateFilter, setStateFilter] = useState<string[]>([]);
+    const [isFirstNameSelected, setIsFirstNameSelected] = useState(true);
+
     const [searchParams] = useSearchParams({
         name: '',
     });
-    const [stateFilter, setStateFilter] = useState<string[]>([]);
-
-    const name = searchParams.get('name');
+    const urlSearchName = searchParams.get('name');
 
     const [currPage, setCurrPage] = useState(1);
-    const membersPerPage = 30;
 
     // get current members
+    const membersPerPage = 30;
     const indexOfLastMember = currPage * membersPerPage;
     const indexOfFirstMember = indexOfLastMember - membersPerPage;
     const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
@@ -38,13 +40,22 @@ export const Members = () => {
         stateFilter.length > 0 ? stateFilter.includes(member.location.state) : currentMembers
     );
 
-    const searchResults = searchByState.filter(member => {
+    const MembersInAlphabeticalOrder = searchByState.sort((x: MemberTypes, y: MemberTypes) => {
+        return isFirstNameSelected
+            ? x.name.first.localeCompare(y.name.first)
+            : x.name.last.localeCompare(y.name.last);
+    });
+
+    const searchResults = MembersInAlphabeticalOrder.filter(member => {
         const firstName = member.name.first + member.name.first.slice(1);
         const lastName = member.name.last + member.name.last.slice(1);
         const fullName = firstName.concat(' ' + lastName);
 
-        return fullName.includes(name!.toLowerCase());
+        return fullName.includes(urlSearchName!.toLowerCase());
     });
+
+    const searchResultsNumber = searchResults.length;
+    const membersTotalResults = members.length;
 
     return (
         <div className="space-y-6">
@@ -59,7 +70,13 @@ export const Members = () => {
                         <StateFilter setStateFilter={setStateFilter} members={members} />
 
                         <section className="md:col-span-3 space-y-6">
-                            <MembersHeader />
+                            <MembersHeader
+                                searchResultsNumber={searchResultsNumber}
+                                membersTotalResults={membersTotalResults}
+                                setIsFirstNameSelected={setIsFirstNameSelected}
+                                isFirstNameSelected={isFirstNameSelected}
+                            />
+
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 auto-row-[250px]">
                                 {searchResults.slice(0, 27).map((member, id) => (
                                     <MemberCard key={id} member={member} />
