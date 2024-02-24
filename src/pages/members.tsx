@@ -6,7 +6,7 @@ import { Header } from '../components/header';
 import { Breadcrumb } from '../components/ui/breadcrumb';
 import { MembersHeader } from '../components/members-header';
 import { MemberCard } from '../components/member-card';
-import { FilterBox } from '../components/state-filter';
+import { StateFilter } from '../components/state-filter';
 import { Pagination } from '../components/pagination';
 
 import LogoWhite from '../assets/logo-white.png';
@@ -18,7 +18,11 @@ import { useSearchParams } from 'react-router-dom';
 export const Members = () => {
     const members = MembersList.results;
 
-    const [searchParams] = useSearchParams({ name: '' });
+    const [searchParams] = useSearchParams({
+        name: '',
+    });
+    const [stateFilter, setStateFilter] = useState<string[]>([]);
+
     const name = searchParams.get('name');
 
     const [currPage, setCurrPage] = useState(1);
@@ -30,7 +34,11 @@ export const Members = () => {
     const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
 
     // filter current members
-    const searchResults = currentMembers.filter(member => {
+    const searchByState = currentMembers.filter(member =>
+        stateFilter.length > 0 ? stateFilter.includes(member.location.state) : currentMembers
+    );
+
+    const searchResults = searchByState.filter(member => {
         const firstName = member.name.first + member.name.first.slice(1);
         const lastName = member.name.last + member.name.last.slice(1);
         const fullName = firstName.concat(' ' + lastName);
@@ -48,7 +56,7 @@ export const Members = () => {
                 <div className="space-y-6">
                     <h1 className="text-3xl font-bold">Lista de membros</h1>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-                        <FilterBox />
+                        <StateFilter setStateFilter={setStateFilter} members={members} />
 
                         <section className="md:col-span-3 space-y-6">
                             <MembersHeader />
