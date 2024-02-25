@@ -2,12 +2,12 @@ import { useState } from 'react';
 
 import MembersList from '../../members.json';
 
-import { Header } from '../components/header';
-import { Breadcrumb } from '../components/ui/breadcrumb';
+import { Header } from '../components/Header';
+import { Breadcrumb } from '../components/ui/Breadcrumb';
 import { MembersHeader } from '../components/members-header';
 import { MemberCard } from '../components/member-card';
 import { StateFilter } from '../components/state-filter';
-import { Pagination } from '../components/pagination';
+import { Pagination } from '../components/Pagination';
 
 import LogoWhite from '../assets/logo-white.png';
 import Facebook from '../assets/Facebook.png';

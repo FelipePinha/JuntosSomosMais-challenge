@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Members } from './pages/members';
+import { Members } from './pages/Members';
 
 const router = createBrowserRouter([
     {
