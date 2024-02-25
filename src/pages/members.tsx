@@ -14,20 +14,17 @@ import Facebook from '../assets/Facebook.png';
 import Whatsapp from '../assets/Whatsapp.png';
 import LinkedIn from '../assets/LinkedIn.png';
 import { useSearchParams } from 'react-router-dom';
-import { MemberTypes } from '../types/membersTypes';
+import { getMembersInAlphabeticalOrder, getSearchResults, stateSearch } from '../utils/filter';
 
 export const Members = () => {
     const members = MembersList.results;
 
     const [stateFilter, setStateFilter] = useState<string[]>([]);
     const [isFirstNameSelected, setIsFirstNameSelected] = useState(true);
-
-    const [searchParams] = useSearchParams({
-        name: '',
-    });
-    const urlSearchName = searchParams.get('name');
-
     const [currPage, setCurrPage] = useState(1);
+
+    const [searchParams] = useSearchParams({ name: '' });
+    const urlSearchName = searchParams.get('name');
 
     // get current members
     const membersPerPage = 30;
@@ -36,23 +33,14 @@ export const Members = () => {
     const currentMembers = members.slice(indexOfFirstMember, indexOfLastMember);
 
     // filter current members
-    const searchByState = currentMembers.filter(member =>
-        stateFilter.length > 0 ? stateFilter.includes(member.location.state) : currentMembers
+    const searchByState = stateSearch(currentMembers, stateFilter);
+
+    const membersInAlphabeticalOrder = getMembersInAlphabeticalOrder(
+        searchByState,
+        isFirstNameSelected
     );
 
-    const MembersInAlphabeticalOrder = searchByState.sort((x: MemberTypes, y: MemberTypes) => {
-        return isFirstNameSelected
-            ? x.name.first.localeCompare(y.name.first)
-            : x.name.last.localeCompare(y.name.last);
-    });
-
-    const searchResults = MembersInAlphabeticalOrder.filter(member => {
-        const firstName = member.name.first + member.name.first.slice(1);
-        const lastName = member.name.last + member.name.last.slice(1);
-        const fullName = firstName.concat(' ' + lastName);
-
-        return fullName.includes(urlSearchName!.toLowerCase());
-    });
+    const searchResults = getSearchResults(membersInAlphabeticalOrder, urlSearchName!);
 
     const searchResultsNumber = searchResults.length;
     const membersTotalResults = members.length;
@@ -78,17 +66,25 @@ export const Members = () => {
                             />
 
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 auto-row-[250px]">
-                                {searchResults.slice(0, 27).map((member, id) => (
-                                    <MemberCard key={id} member={member} />
-                                ))}
+                                {searchResults.length > 0 ? (
+                                    searchResults
+                                        .slice(0, 27)
+                                        .map((member, id) => (
+                                            <MemberCard key={id} member={member} />
+                                        ))
+                                ) : (
+                                    <p>Nenhum resultado encontrado.</p>
+                                )}
                             </div>
 
-                            <Pagination
-                                membersPerPage={membersPerPage}
-                                totalMembers={members.length}
-                                setCurrPage={setCurrPage}
-                                currPage={currPage}
-                            />
+                            {searchResults.length > 0 && (
+                                <Pagination
+                                    membersPerPage={membersPerPage}
+                                    totalMembers={members.length}
+                                    setCurrPage={setCurrPage}
+                                    currPage={currPage}
+                                />
+                            )}
                         </section>
                     </div>
                 </div>
